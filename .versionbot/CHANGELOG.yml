@@ -1,4 +1,16 @@
 - commits:
+    - subject: Fix repo description
+      hash: 2c35d55e6ad02935b47ff64a46c1cf937c44abc4
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: belodetek
+      nested: []
+  version: 0.0.3
+  title: ""
+  date: 2023-03-06T02:45:30.852Z
+- commits:
     - subject: Enable CI pipeline
       hash: a0b65331c8a632adfd670dfdf3edcefde41f7747
       body: ""
