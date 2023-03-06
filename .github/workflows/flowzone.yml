@@ -25,5 +25,4 @@ jobs:
       repo_config: true
       repo_homepage: "belodetek.io"
       cloudflare_website: "red-alert"
-      repo_description: |
-        Free domestic water leak monitoring with Dragino LWL02 LoRaWAN sensors, Helium, Node-RED and Twilio.
+      repo_description: "Free domestic water leak monitoring with Dragino LWL02 LoRaWAN sensors, Helium, Node-RED and Twilio."
