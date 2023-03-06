@@ -1,0 +1,38 @@
+version: '2.4'
+networks: {}
+volumes:
+  resin-data: {}
+services:
+  main:
+    build:
+      context: .
+    tty: true
+    entrypoint:
+      - /bin/bash
+      - "-c"
+    command:
+      - |
+        if [[ -n "${__NODE_RED_BACKUP_EXPORT_JSON__}" ]] && ! [[ -f /data/flows.json ]]; then
+            echo "${__NODE_RED_BACKUP_EXPORT_JSON__}" > /data/flows.json
+        fi
+
+        exec npm \
+          --no-update-notifier \
+          --no-fund \
+          start \
+          --cache /data/.npm \
+          -- \
+          --userDir /data \
+          "$@"
+
+    restart: unless-stopped
+    ports:
+      - '80:1880/tcp'
+    volumes:
+      - 'resin-data:/data'
+    labels:
+      io.resin.features.kernel-modules: '1'
+      io.resin.features.firmware: '1'
+      io.resin.features.dbus: '1'
+      io.resin.features.supervisor-api: '1'
+      io.resin.features.resin-api: '1'
