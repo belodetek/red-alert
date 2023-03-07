@@ -23,6 +23,5 @@ jobs:
     with:
       balena_slugs: gh_ab77/red-alert
       repo_config: true
-      repo_homepage: "https://red-alert.pages.dev/"
       cloudflare_website: "red-alert"
       repo_description: "Free domestic water leak monitoring with Dragino LWL02 LoRaWAN sensors, Helium, Node-RED and Twilio."
