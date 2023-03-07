@@ -1,4 +1,16 @@
 - commits:
+    - subject: Generate version
+      hash: 8d1d7226275b12014548a0e5cc8e88fbb3d2441a
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Anton Belodedenko
+      nested: []
+  version: 0.0.4
+  title: ""
+  date: 2023-03-07T17:51:52.125Z
+- commits:
     - subject: Fix repo description
       hash: 2c35d55e6ad02935b47ff64a46c1cf937c44abc4
       body: ""
