@@ -1,0 +1,115 @@
+[
+    {
+        "id": "d59e1cf887aa4903",
+        "type": "mqtt in",
+        "z": "40fae1567456d629",
+        "name": "",
+        "topic": "${helium_org_id}/rx",
+        "qos": "2",
+        "datatype": "json",
+        "broker": "1f80052d28a5ce3d",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 270,
+        "y": 140,
+        "wires": [
+            [
+                "2ba201ac88a4bbe0"
+            ]
+        ]
+    },
+    {
+        "id": "2ba201ac88a4bbe0",
+        "type": "function",
+        "z": "40fae1567456d629",
+        "name": "decode payload",
+        "func": "/* http://wiki.dragino.com/xwiki/bin/view/Main/User%20Manual%20for%20LoRaWAN%20End%20Nodes/LWL02%20-%20LoRaWAN%20Door%20Sensor%20User%20Manual/\n   https://raw.githubusercontent.com/dragino/dragino-end-node-decoder/main/LWL02/lds01_02_payload_ttn_v1.5.txt\n*/\nfunction Decoder(bytes, port) {\n    // Decode an uplink message from a buffer\n    // (array) of bytes to an object of fields.\n    var value = (bytes[0] << 8 | bytes[1]) & 0x3FFF;\n    var bat = value / 1000;//Battery,units:V\n\n    var door_open_status = bytes[0] & 0x80 ? 1 : 0;//1:open,0:close\n    var water_leak_status = bytes[0] & 0x40 ? 1 : 0;\n\n    var mod = bytes[2];\n    var alarm = bytes[9] & 0x01;\n\n    if (mod == 1) {\n        var open_times = bytes[3] << 16 | bytes[4] << 8 | bytes[5];\n        var open_duration = bytes[6] << 16 | bytes[7] << 8 | bytes[8];//units:min\n        // @ts-ignore\n        if (bytes.length == 10 && 0x07 > bytes[0] < 0x0f)\n            return {\n                BAT_V: bat,\n                MOD: mod,\n                DOOR_OPEN_STATUS: door_open_status,\n                DOOR_OPEN_TIMES: open_times,\n                LAST_DOOR_OPEN_DURATION: open_duration,\n                ALARM: alarm\n            };\n    }\n    else if (mod == 2) {\n        var leak_times = bytes[3] << 16 | bytes[4] << 8 | bytes[5];\n        var leak_duration = bytes[6] << 16 | bytes[7] << 8 | bytes[8];//units:min\n        // @ts-ignore\n        if (bytes.length == 10 && 0x07 > bytes[0] < 0x0f)\n            return {\n                BAT_V: bat,\n                MOD: mod,\n                WATER_LEAK_STATUS: water_leak_status,\n                WATER_LEAK_TIMES: leak_times,\n                LAST_WATER_LEAK_DURATION: leak_duration\n            };\n    }\n    else if (mod == 3)\n        // @ts-ignore\n        if (bytes.length == 10 && 0x07 > bytes[0] < 0x0f) {\n            return {\n                BAT_V: bat,\n                MOD: mod,\n                DOOR_OPEN_STATUS: door_open_status,\n                WATER_LEAK_STATUS: water_leak_status,\n                ALARM: alarm\n            };\n        }\n        else {\n            return {\n                BAT_V: bat,\n                MOD: mod,\n            };\n        }\n}\n\n// strip labels metadata\nfunction stripLabels(metadata) {\n    const labels = [];\n    for (var keys in metadata) {\n        let label = metadata[keys];\n        labels.push(label.name);\n    }\n    return labels;\n}\n\n// msg info\nnode.log(JSON.stringify(msg, null, 2));\n\n// decode payload\nconst message = msg.payload;\nconst decoded_payload = Decoder(Buffer.from(message.payload, 'base64'));\nmsg.payload.payload = decoded_payload;\n\n// device payload info\nconst batteryVolts = msg.payload.payload.BAT_V;\nconst waterLeakStatus = msg.payload.payload.WATER_LEAK_STATUS;\nconst waterLeakTimes = msg.payload.payload.WATER_LEAK_TIMES;\nconst waterLeakDuration = msg.payload.payload.LAST_WATER_LEAK_DURATION;\nconst batteryLow = batteryVolts <= 2.1;\nconst keepAlive = (waterLeakStatus == 0 && waterLeakDuration == 0);\nconst alertNotify = !keepAlive && batteryLow;\n\nmsg.body = {\n    name: msg.payload.name,\n    ts: new Date(msg.payload.reported_at).toISOString(),\n    labels: stripLabels(msg.payload.metadata.labels),\n    payload: msg.payload.payload\n}\nmsg.alertNotify = alertNotify;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "// @ts-nocheck\n// Code added here will be run once\n// whenever the node is started.",
+        "finalize": "",
+        "libs": [],
+        "x": 580,
+        "y": 180,
+        "wires": [
+            [
+                "9d1170f9b5fe0c47"
+            ]
+        ]
+    },
+    {
+        "id": "ed9e0c17fdf93e8f",
+        "type": "inject",
+        "z": "40fae1567456d629",
+        "name": "test",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"capture-your-device-payload\":\"and-copy-it-here-as-json-for-testing\"}",
+        "x": 390,
+        "y": 220,
+        "wires": [
+            [
+                "2ba201ac88a4bbe0"
+            ]
+        ]
+    },
+    {
+        "id": "9d1170f9b5fe0c47",
+        "type": "function",
+        "z": "40fae1567456d629",
+        "name": "send alert sms",
+        "func": "// Account SID from www.twilio.com/console\nconst accountSid = env.get(\"TWILIO_ACCOUNT_SID\");\n// Auth Token from www.twilio.com/console\nconst authToken = env.get(\"TWILIO_AUTH_TOKEN\");\n\n// SMS numbers\nconst messagingServiceSid = env.get(\"TWILIO_MESSAGING_SERVICE_SID\");\nconst smsAlertRcptTo = env.get(\"SMS_ALERT_RCPT_TO\");\n\nif (msg.alertNotfy) {\n    // send message\n    const client = twilio(accountSid, authToken);\n    client.messages\n        .create({\n            body: JSON.stringify(msg.body, null, 2),\n            to: smsAlertRcptTo,\n            messagingServiceSid: messagingServiceSid\n        })\n        .then((/** @type {{ sid: any; }} */ message) => {\n            node.log(message.sid);\n            return message;\n        });\n} else {\n    node.log(JSON.stringify(msg.body, null, 2));\n}",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [
+            {
+                "var": "twilio",
+                "module": "twilio"
+            }
+        ],
+        "x": 960,
+        "y": 180,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "1f80052d28a5ce3d",
+        "type": "mqtt-broker",
+        "name": "HiveMQ",
+        "broker": "mqtt://broker.hivemq.com",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    }
+]
