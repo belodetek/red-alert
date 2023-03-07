@@ -4,7 +4,7 @@
 ## try it
 > Technically, balenaCloud/balenaOS isn't required, but it's free for the first ten devices and makes things so much easier; alternatively, any Linux machine with `dockerd` and compose tooling installed could be used, but then you'd have to sort out SSL certs, SSH auth, etc.
 
-Required software and hardware:
+required software and hardware:
 * [Dragino LWL02 water leak sensor(s)](https://www.dragino.com/products/lorawan-nb-iot-door-sensor-water-leak/item/180-lwl02.html)
 * balenaOS [supported](https://docs.balena.io/reference/hardware/devices/) hardware (e.g. Raspberry Pi)
 * [balena-cli](https://github.com/balena-io/balena-cli)
