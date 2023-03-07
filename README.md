@@ -4,7 +4,7 @@
 ## try it
 > Technically, balenaCloud/balenaOS isn't required, but it's free for the first ten devices and makes things so much easier; alternatively, any Linux machine with `dockerd` and compose tooling installed could be used, but then you'd have to sort out SSL certs, SSH auth, etc.
 
-Required software and hardware:
+required software and hardware:
 * [Dragino LWL02 water leak sensor(s)](https://www.dragino.com/products/lorawan-nb-iot-door-sensor-water-leak/item/180-lwl02.html)
 * balenaOS [supported](https://docs.balena.io/reference/hardware/devices/) hardware (e.g. Raspberry Pi)
 * [balena-cli](https://github.com/balena-io/balena-cli)
@@ -15,7 +15,7 @@ Required software and hardware:
 * sign-up to [balenaCloud](https://dashboard.balena-cloud.com/signup)
 * start a free trial (~ $15) with Twilio](https://console.twilio.com/) and generate API keys
 * subscribe to [Helium Foundation Console](https://docs.helium.com/use-the-network/console/) (10 devices and ~ 250 DCs free) and generate your API key
-* in the console, create a new MQTT integration to the free [HiveMQ broker](https://www.hivemq.com/public-mqtt-broker/) <img width="826" alt="image" src="https://user-images.githubusercontent.com/2033996/223318833-db1bf054-6f3a-48bf-9bd8-7453654d0b3b.png">
+* in the console, create a new MQTT integration to the free [HiveMQ broker](https://www.hivemq.com/public-mqtt-broker/) <img width="826" alt="image" src="https://user-images.githubusercontent.com/2033996/223318833-db1bf054-6f3a-48bf-9bd8-7453654d0b3b.png"/>
 
 ### deployment
 > (e.g.) [Node-RED](https://hub.docker.com/r/nodered/node-red/) on a [balenaFin](https://www.balena.io/fin), which is a [CM3](https://www.raspberrypi.com/products/compute-module-3/) based SBC
@@ -78,7 +78,7 @@ Required software and hardware:
 
 * register your with Helium Foundation Console
 * install sensors strategically around water egress areas around your dwelling
-* tag/label you devices and link them with the integration <img width="617" alt="image" src="https://user-images.githubusercontent.com/2033996/223322225-c4894e99-a321-4586-be89-7c9c168dfb43.png">
+* tag/label you devices and link them with the integration <img width="617" alt="image" src="https://user-images.githubusercontent.com/2033996/223322225-c4894e99-a321-4586-be89-7c9c168dfb43.png"/>
 * observe your device logs (Node-RED stdout) to see MQTT messages from HiveMQ come in periodocally (during registration and once every 24h)
 * adjust the code to suit your specifc requirements
 * export and store it in `__NODE_RED_BACKUP_EXPORT_JSON__ ` balenaCloud fleet env. var. as a compact JSON for a stateless configuration
