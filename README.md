@@ -13,7 +13,7 @@
 ### check prerequisites
 * procure up to ten LW02 sensors
 * sign-up to [balenaCloud](https://dashboard.balena-cloud.com/signup)
-* start a free trial (~ $15) with Twilio](https://console.twilio.com/) and generate API keys
+* start a free trial (~ $15) with [Twilio](https://console.twilio.com/) and generate API keys
 * subscribe to [Helium Foundation Console](https://docs.helium.com/use-the-network/console/) (10 devices and ~ 250 DCs free) and generate your API key
 * in the console, create a new MQTT integration to the free [HiveMQ broker](https://www.hivemq.com/public-mqtt-broker/) <img width="826" alt="image" src="https://user-images.githubusercontent.com/2033996/223318833-db1bf054-6f3a-48bf-9bd8-7453654d0b3b.png"/>
 
